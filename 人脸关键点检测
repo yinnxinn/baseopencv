@@ -1,0 +1,75 @@
+import cv2
+import dlib
+import openface
+import sklearn
+import skimage
+
+#define the detector
+
+haar_cascade="/usr/share/opencv/haarcascades/haarcascade_frontalface_alt_tree.xml"
+
+#define face detedtion predictor_model
+predictor_model = "shape_predictor_68_face_landmarks.dat"
+
+#define detector
+cascade_classifier=cv2.CascadeClassifier(haar_cascade)
+dlib_detector=dlib.get_frontal_face_detector()
+
+face_pose_predictor=dlib.shape_predictor(predictor_model)
+
+#alignate face
+face_aligner = openface.AlignDlib(predictor_model) 
+
+#open the camera
+cap=cv2.VideoCapture(0)
+#create windows
+cv2.namedWindow("show",1)
+
+win=dlib.image_window()
+temp=[]
+while 1:
+    #get the frame
+    ret,frame=cap.read()
+    #get the gray_img    
+    gray_img=cv2.cvtColor(frame,cv2.COLOR_BGR2GRAY)
+    #haarcascadeclassifier
+    faces=cascade_classifier.detectMultiScale(gray_img,1.2,5)
+    #print type(faces)
+    for (x,y,width,height) in faces:
+        center=(int((x+width*0.5)),int((y+height*0.5)))
+        radius=int((height)*0.5)
+        cv2.circle(frame,center,radius,(255,0,0),2)
+
+    #dlib_detector
+    detected_faces = dlib_detector(gray_img, 1)
+
+    dets,scores,idx=dlib_detector.run(gray_img,1,-1)
+    #print type(detected_faces)
+    for i, face_rect in enumerate(detected_faces):
+        x1=face_rect.left()
+        y1=face_rect.top()
+        x2=face_rect.right()
+        y2=face_rect.bottom()
+        cv2.rectangle(frame,(x1,y1),(x2,y2),(255,255,0),2)
+        print 'confidence:%s' %str(scores[i])
+        
+        
+        pose_landmarks=face_pose_predictor(frame,face_rect)
+        if i%5==0:
+           win.clear_overlay()
+           win.add_overlay(pose_landmarks)
+       # win.add_overlay(face_rect)
+        alignedFace = face_aligner.align(480, frame, face_rect, landmarkIndices=openface.AlignDlib.OUTER_EYES_AND_NOSE)  
+        cv2.imwrite("aligned_face_{}.jpg".format(i), alignedFace)    
+    cv2.imshow("show",frame)
+    win.set_image(frame)
+    
+    
+
+    if cv2.waitKey(1) & 0xFF == ord('c'):
+        break
+cap.release()
+cv2.destroyAllWindows()
+
+
+
