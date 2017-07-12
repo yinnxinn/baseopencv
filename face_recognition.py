@@ -12,8 +12,8 @@
 
 import cv2
 import os
-import dlib
 import face_recognition
+import dlib
 
 labels=[]
 encode=[]
