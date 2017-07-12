@@ -8,7 +8,7 @@ import skimage
 
 haar_cascade="/usr/share/opencv/haarcascades/haarcascade_frontalface_alt_tree.xml"
 
-#define face detedtion predictor_model
+#define face detedtion predictor_model ,data can download from dlib.cmo
 predictor_model = "shape_predictor_68_face_landmarks.dat"
 
 #define detector
