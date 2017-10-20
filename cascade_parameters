@@ -1,0 +1,30 @@
+#the meaning of every output parameters 
+#from internet
+
+1.The cascade - adaboost classifier has stages.
+
+In each stage we have numPos and numNeg samples.
+
+2.The numPos samples are the number of positive samples that are used as training samples in the i-th stage.They aren't the total number of samples in the vec file.
+
+You may choose them to be for example 0.95*(number of samples in vec file).
+
+3.The numNeg samples are the number of samples used in training of the ith stage. They are picked randomly (cropped and scaled from the negative images)
+
+They could be more or less than the total number of negative images that you have.
+
+For example: Suppose you have 1000 negative Images ,numNeg may be 5000 samples.
+
+The samples that are picked are only those that were classified mistakenly as positive by the i-1 stage.
+
+This is a good idea since we are sure that only more difficult negatives are going to next stage.
+
+4.Hard negatives are those FA that you get after running your final classifier on a set of negative images or video.
+
+You may add negative that are called hard negatives by just cropping and resizing your negatives to the positive sample width and height.
+
+5.The acceptance ratio of the negatives is the number of negatives classified as positive divided by those which classified correctly as negatives in each stage. For example 1/1000 means that randomly picking 1000 windows of negatives from the negative images one of them is classified as positive.
+
+As explained in 3 just those that classified as positive by the i-1 predictor will be the negatives of the i stage.
+
+6.THE FA rate error is only per window ! I believe it was better if we have also a FA criteria on Image level and not just window level FA/Image(Of course there is a correlation between them,but still you want to know your error rate on image level) Currently just make sure that you have very low error on window level and hopefully you are good also in Image level.
